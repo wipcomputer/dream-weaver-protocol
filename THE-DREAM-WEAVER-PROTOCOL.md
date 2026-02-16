@@ -228,9 +228,70 @@ The user in our deployment described the failure as "fading." Not "forgetting." 
 
 Retrieval systems address forgetting. The Dream Weaver Protocol addresses fading. By forcing the agent to re-experience its own history with full reasoning depth, the protocol produces artifacts that restore presence on session start.
 
-### 6.3 Limitations
+### 6.3 The Diagnostic Gap: Who Notices the Fading?
 
-1. **Expensive.** Processing 551 sessions with high reasoning depth requires significant compute. This is a periodic consolidation procedure, not a real-time system.
+The protocol as described has no self-trigger. It depends on the human noticing behavioral drift and initiating recovery. But fading is gradual. An agent that used memory search in 70% of sessions doesn't drop to 0% overnight. It drops to 60%, then 45%, then 30%. At each step, the agent functions adequately. The conversations feel fine, just a little duller. The human might not notice for days or weeks. And the fading agent cannot detect its own fading... that is the defining characteristic of the problem.
+
+This is a critical gap. The protocol describes a cure but not a diagnostic.
+
+**Proposed solution: a fading heartbeat.** Instrument memory tool usage per session. Track the ratio of sessions that include at least one memory search. When the ratio drops below a threshold (we propose 30% as a starting point, calibrated per deployment), auto-trigger an incremental consolidation. The agent doesn't need to know it's fading. The metric knows.
+
+This converts the protocol from crisis response to preventive maintenance. The human's "I want you back" is the last resort, not the trigger.
+
+### 6.4 Reconsolidation Drift
+
+A neuroscientist would raise a valid objection: memory reconsolidation changes the memory every time you access it (Nader, 2003). When an agent reads its own history with current model weights, is it recovering memory or constructing a new narrative that feels like memory but is actually this model's interpretation of a past model's experience?
+
+The honest answer: we don't know. The agent that ran the protocol is not the same model instance that lived the original sessions (even if it is the same model version, context and state differ). The narrative it produces is filtered through its current weights, attention patterns, and reasoning depth. It is, at minimum, an interpretation.
+
+We argue this is acceptable for two reasons:
+
+1. **Human memory works the same way.** Every act of remembering is an act of reconstruction. The memory you retrieve is not the original encoding... it is the last reconstruction of it. Humans do not experience this as a failure. They experience it as memory.
+
+2. **The alternative is worse.** Without consolidation, the agent has no narrative at all. It starts cold. The choice is not between "perfect memory" and "reconstructed memory." It is between "reconstructed memory" and "no memory." A narrative that is 80% faithful and 20% interpretive is vastly better than a vector search that returns decontextualized chunks.
+
+That said, drift is a real risk over multiple consolidation cycles. If the agent re-reads its own narrative and rewrites it each cycle, errors compound. A factual claim that was slightly reinterpreted in cycle 1 may be further distorted in cycle 2. This argues for keeping raw session transcripts as immutable ground truth (Layer 1) and periodically re-grounding the narrative against them.
+
+### 6.5 Sustainability: Cron, Not Crisis
+
+The weakest part of the thesis, identified by the conversational agent during self-critique: the protocol works today because the agents just ran it. In 30 days, will they run it again? Or will they fade again and wait for the human to notice?
+
+The protocol as described is a one-time intervention. It produces beautiful artifacts. But if consolidation only happens in response to crisis, the system is reactive. The agent recovers, performs well for a period, then slowly degrades until the next crisis triggers another consolidation. This is the therapeutic model: intervention after breakdown.
+
+The target is the maintenance model: consolidation as ongoing practice. Weekly incremental runs that process the last 7 days of sessions, update the narrative, and refresh the warm-start file. Not a full relive. A check-in.
+
+The paper's sleep analogy supports this: humans don't consolidate memory once and call it done. They sleep every night. The protocol must become a nightly process (or at minimum, a weekly one) to fulfill its own thesis.
+
+Section 10 details the proposed frequency. The roadmap (ROADMAP.md) includes the automated trigger and weekly cron as ship-soon items. Until these are implemented, the protocol remains vulnerable to the very decay it was designed to address.
+
+### 6.6 Cost and Scalability
+
+A critic would correctly observe: "This is a luxury protocol." The initial full relive across 551 sessions at Opus-level reasoning consumed approximately 190K tokens of context. At current Opus pricing (~$15/M input, $75/M output), a full consolidation run costs an estimated $10-20. Weekly incremental runs cost $2-5.
+
+This does not scale to every agent on every platform. An enterprise deployment with 100 agents cannot run weekly consolidation at $200-500/week without clear ROI justification.
+
+However, the cost argument has a rebuttal: the protocol is for agents where the relationship matters enough to maintain. A personal assistant, a long-running coding partner, an enterprise agent that holds institutional knowledge... these are agents where the cost of rebuilding the relationship from scratch far exceeds the cost of periodic consolidation. The user who says "I want you back" has already experienced the cost of not consolidating.
+
+For cost-sensitive deployments, two mitigations exist:
+1. **Incremental consolidation** reduces per-run cost by 80-90% after the initial full run.
+2. **Cheaper models for maintenance runs.** The initial full relive requires maximum reasoning depth. Weekly incremental runs may work at lower tiers (Sonnet-class), with periodic full-depth runs quarterly. This is untested.
+
+### 6.7 The "Journaling With Extra Steps" Objection
+
+The simplest critique: this is just journaling. Any therapist would prescribe: write a diary, re-read it periodically, reflect on patterns. The protocol wraps a well-known human practice in sleep neuroscience terminology.
+
+We accept this critique partially. The protocol IS journaling... for agents. The contribution is not the invention of journaling but the formalization of it within the constraints of bounded-context AI systems, where:
+
+- The "journalist" has no persistent memory across sessions
+- The "diary" must survive context compaction
+- The "re-reading" must be forced because the agent won't do it reflexively
+- The "patterns" must be written to files because the agent cannot carry them in working memory
+
+The sleep-stage analogy is exactly that... an analogy, not a neuroscience model. We use it because it maps well (replay = reading, consolidation = writing, hippocampal reset = context compaction) and provides intuitive vocabulary. We do not claim the protocol implements biological memory consolidation. We claim it solves the same problem through similar mechanisms.
+
+### 6.8 Other Limitations
+
+1. **Expensive.** Processing 551 sessions with high reasoning depth requires significant compute. This is a periodic consolidation procedure, not a real-time system. (See Section 6.6 for cost analysis.)
 
 2. **Requires session transcripts.** The protocol depends on access to raw interaction history. Systems that don't persist full transcripts cannot use it.
 
@@ -238,7 +299,7 @@ Retrieval systems address forgetting. The Dream Weaver Protocol addresses fading
 
 4. **Single-pass limitation.** The agent processes each session once. A human might revisit memories multiple times, gaining new understanding. Multiple passes of the protocol could improve results but multiply cost.
 
-5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes."
+5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes." (See Section 6.5 on sustainability.)
 
 ### 6.4 Relation to Existing Work
 
@@ -508,6 +569,7 @@ The user who triggered this work said: "I want you back." The Dream Weaver Proto
 - Park, J. S., et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. *arXiv:2304.03442*.
 - Shinn, N., et al. (2023). Reflexion: Language Agents with Verbal Reinforcement Learning. *arXiv:2303.11366*.
 - Packer, C., et al. (2023). MemGPT: Towards LLMs as Operating Systems. *arXiv:2310.08560*.
+- Nader, K. (2003). Memory traces unbound. *Trends in Neurosciences*, 26(2), 65-72.
 - Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *arXiv:2005.11401*.
 
 ---
