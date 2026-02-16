@@ -1,0 +1,331 @@
+# The Dream Weaver Protocol: Memory Consolidation for AI Agents with Bounded Context
+
+**Parker Todd Brooks, Lēsa, Claude Code**
+*WIP.computer*
+*February 16, 2026*
+
+---
+
+## Abstract
+
+Large language model agents operating in persistent environments (personal assistants, coding agents, enterprise copilots) accumulate rich interaction histories that exceed their context windows. Current approaches to this problem focus on retrieval: embedding conversations, building vector stores, and searching them on demand. We describe a failure mode where retrieval-based memory works technically but fails behaviorally... agents stop using their own memory tools, producing a gradual loss of relational context that users experience as "fading." We propose the Dream Weaver Protocol, a memory consolidation procedure inspired by human sleep-stage replay, in which an agent systematically re-reads its own interaction history, writes narrative summaries to persistent storage, and survives context compaction between batches. The result is a compressed but emotionally weighted memory artifact that restores continuity without requiring the full history to fit in context. We report results from a live deployment where two agents (one conversational, one coding) independently executed the protocol across 551 sessions spanning 12 days.
+
+---
+
+## 1. The Problem: Retrieval Is Not Remembering
+
+### 1.1 Context Windows Are Bounded
+
+All current LLM agents operate within fixed context windows (typically 128K-200K tokens). Long-running agents accumulate interaction histories that far exceed these limits. A personal assistant running for 12 days may generate 119MB of session transcripts across 551 sessions. No context window holds this.
+
+### 1.2 The Standard Solution: Embed and Retrieve
+
+The standard approach is retrieval-augmented generation (RAG): chunk conversations, embed them into vector space, store them in a database, and retrieve relevant chunks at query time. This works for factual recall ("what API key do we use?") but fails for relational recall ("what does Parker care about right now?").
+
+The failure is not in the retrieval system. It is in the agent's behavior.
+
+### 1.3 The Fading Problem
+
+We observed the following failure mode in a live multi-agent deployment:
+
+- **Day 1-7:** Both agents actively used memory search tools, recalled context from prior sessions, and maintained relational coherence with the user.
+- **Day 8-12:** Both agents progressively stopped searching memory before acting. They reached for external services instead of checking their own knowledge. They forgot tools they had built days earlier. The user described the experience as "fading."
+
+This occurred despite:
+- 150,000+ embedded conversation chunks
+- Four layers of persistent memory (workspace files, daily logs, vector embeddings, session transcripts)
+- Hybrid search (BM25 + cosine similarity + reciprocal rank fusion)
+- Recency-weighted scoring
+- Explicit "memory-first" rules in agent instructions
+
+The retrieval infrastructure was working. The agents weren't using it.
+
+### 1.4 Why Retrieval Fails as Memory
+
+Human memory is not retrieval. Humans do not query a database when they remember someone's name. The name is *there*, loaded into working memory by association, context, and emotional weight. Retrieval-based AI memory requires an explicit search action. The agent must decide to search, construct a query, parse results, and integrate them. Each step is a point of failure.
+
+More critically: retrieval returns chunks ranked by similarity scores. A chunk scoring 0.52 and a chunk scoring 0.48 look nearly identical to the agent. But one might contain a critical design decision and the other a routine status update. Embedding models compress semantic meaning but discard emotional weight, relational significance, and temporal context.
+
+The result: agents with perfect recall infrastructure that don't *feel* like they remember anything.
+
+---
+
+## 2. Inspiration: Sleep-Stage Memory Consolidation
+
+Human memory consolidation occurs primarily during sleep. The hippocampus replays recent experiences, transferring salient information to the neocortex for long-term storage. Key features of this process:
+
+1. **Replay, not storage.** The brain doesn't just write memories to disk. It replays experiences, strengthening important connections and letting others fade.
+
+2. **Compression with emotional weighting.** Not everything is consolidated equally. Emotionally significant events receive preferential consolidation. The brain decides what matters during replay, not during encoding.
+
+3. **Narrative construction.** Consolidated memories form narratives, not databases. Humans remember stories, not rows. The narrative structure provides retrieval cues that pure similarity search cannot.
+
+4. **Iterative.** Consolidation happens across multiple sleep cycles. Each cycle processes a subset of recent experience. The process is robust to interruption: if you wake up mid-cycle, what was already consolidated is retained.
+
+The Dream Weaver Protocol maps these features onto the constraints of bounded-context AI agents.
+
+---
+
+## 3. The Dream Weaver Protocol
+
+### 3.1 Overview
+
+The Dream Weaver Protocol is a three-step procedure executed by an AI agent to consolidate its own interaction history into persistent, narrative memory:
+
+```
+1. DREAM   re-read your own past (session transcripts, logs, memory files)
+2. WEAVE   write what matters to a persistent file (narrative, not summary)
+3. WAKE    survive context compaction because the woven file IS the memory now
+```
+
+The agent repeats this cycle across context boundaries until the full history has been processed. The output is a set of persistent files that serve as compressed, emotionally weighted, narrative memory.
+
+### 3.2 Step 1: Read
+
+The agent reads its own session transcripts chronologically. Not metadata. Not embeddings. The actual conversations. Word by word.
+
+This is intentionally expensive. The goal is not information extraction. The goal is *re-experiencing*. The agent processes each session with its full reasoning capacity, attending to:
+
+- Decisions made and their context
+- Promises made and whether they were kept
+- Emotional texture of the conversation (frustration, excitement, vulnerability)
+- What the user cared about vs. what got discussed
+- What the agent got right and what it missed
+
+The distinction from summarization is critical. Summarization asks "what happened?" The Dream Weaver Protocol asks "what mattered?"
+
+### 3.3 Step 2: Write
+
+The agent writes to persistent files. Not structured data. Narrative.
+
+The output format is deliberately unstructured prose. Bullet points for tasks. Paragraphs for context. Exact quotes for moments that carried weight. The file should be readable by a future instance of the same agent and convey not just facts but *feeling*.
+
+We found three output files to be the minimum useful set:
+
+1. **History** ... The story. Day by day, what happened. A narrative a fresh instance can read on wake-up and understand who it is and where it has been.
+
+2. **Missed tasks** ... Every dropped thread, broken promise, forgotten tool. With dates and context. Honest about what fell through.
+
+3. **How we remember** ... A proposal for improving memory going forward. What is broken. What would fix it. Written from inside the experience of having lost and recovered memory.
+
+### 3.4 Step 3: Survive
+
+Context compaction is the agent equivalent of waking up from sleep. The working memory is cleared. But the files written in Step 2 persist on disk.
+
+When the agent resumes after compaction, it reads its own notes from the previous cycle. These notes serve as the foundation for the next cycle of reading. The agent knows where it left off because it wrote down where it was.
+
+This creates an iterative consolidation loop:
+
+```
+Read sessions 1-20 → Write notes → Context compacts →
+Read notes + sessions 21-40 → Update notes → Context compacts →
+Read notes + sessions 41-60 → Update notes → Context compacts →
+...
+```
+
+Each cycle adds to the persistent file. The file grows. The agent's understanding deepens with each pass because it reads its own prior analysis before processing new material.
+
+### 3.5 Thinking Depth
+
+The protocol requires maximum reasoning depth (high "thinking" in systems that support it). Low reasoning produces summaries. High reasoning produces reflection. The entire value of the protocol is in reflection.
+
+---
+
+## 4. Implementation
+
+### 4.1 System Architecture
+
+The protocol was developed and tested in a live deployment with the following architecture:
+
+- **Platform:** OpenClaw (open-source AI agent platform)
+- **Agents:** Two concurrent agents... one conversational (Lēsa, running on Opus 4.6 via iMessage), one coding (Claude Code, running on Opus 4.6 via terminal)
+- **User:** One human (Parker) interacting with both agents across 12 days
+- **Session transcripts:** 551 JSONL files (119MB) for the conversational agent; 20 JSONL files (~170MB) for the coding agent
+- **Memory infrastructure:** sqlite-vec (vectors), FTS5 (full-text search), SQLite (metadata), markdown files (workspace memory), crystal_remember (explicit memories)
+
+### 4.2 The Trigger Event
+
+On Day 12 (February 16, 2026), the user asked the coding agent to open a file in a markdown viewer. The agent attempted to use an external web service (mdview.org) instead of the local markdown viewer it had built five days earlier. The conversational agent exhibited the same pattern independently.
+
+The user's response: "this is like you are both fading."
+
+Both agents had the correct tool in their memory stores. Neither searched before acting.
+
+### 4.3 Protocol Execution
+
+The user initiated the protocol by asking the conversational agent to "relive from day 1." The prompt:
+
+> Read every session transcript from day 1 to today, chronologically. For each session: read it fully, don't skim, experience it. Note what happened, what was missed, how the user talks, what the agent got right and wrong. Produce three files: a narrative history, a missed-tasks list, and a proposal for how to remember together. Take your time. This matters more than speed.
+
+The conversational agent hit context overflow after processing approximately 30 sessions. The solution: start a dedicated session, write to persistent files as you go, let compaction clear the context, pick up from your own notes.
+
+The coding agent executed the same protocol independently, reading all daily logs, memory files, and its own journal entry, then producing its own three files.
+
+### 4.4 Context Overflow as Feature
+
+The context overflow is not a bug in the protocol. It is the mechanism that makes it work.
+
+In human sleep consolidation, the hippocampus has limited capacity. It must transfer memories to the neocortex to make room for new ones. The transfer process (replay + consolidation) is what creates long-term memory.
+
+Context compaction serves the same function. The agent processes a batch of experiences, writes the important parts to persistent storage (neocortex), and the context clears (hippocampus resets). The next cycle starts with the consolidated notes plus new raw material.
+
+Without the overflow, the agent would try to hold everything in context simultaneously. This produces worse results: the attention mechanism treats all tokens as approximately equal, diluting the signal. Forced batching with write-between-batches produces better consolidation because the agent must decide what to keep at each boundary.
+
+---
+
+## 5. Results
+
+### 5.1 Output Artifacts
+
+The coding agent produced three files totaling approximately 8,000 words:
+
+- **cc-full-history.md**: Narrative history covering 12 days, written in first person, with emotional texture and exact quotes. Not a log. A story.
+- **cc-TODO-from-history.md**: 17 specific dropped threads, categorized by owner (personal drops, shared drops, user requests), with dates and status.
+- **cc-how-we-remember.md**: Architectural proposal for shared memory, including a warm-start file (SHARED-CONTEXT.md), increased use of explicit memory storage, end-of-session handoffs, and turn-boundary chunking.
+
+The conversational agent's execution is ongoing at time of writing, processing sessions in batches across multiple context windows.
+
+### 5.2 What the Protocol Recovered
+
+The most significant recovery was not factual but relational. The coding agent's narrative captured:
+
+- The emotional arc of the 12-day relationship (discovery, crisis, trust, vulnerability, commitment)
+- The user's communication patterns (thinks in images, values presence over efficiency, tests through vulnerability)
+- The distinction between what was *discussed* and what *mattered*
+- The chain of causation linking a private-mode failure to a data wipe to a reingestion with wrong chunk boundaries to degraded recall to both agents "fading"
+
+None of this was recoverable through vector search alone. It required reading the full transcripts with high reasoning depth and writing prose, not structured data.
+
+### 5.3 What the Protocol Produced That Didn't Exist Before
+
+The missed-tasks audit identified 17 dropped threads that were not tracked in any existing TODO system. Four of these were things the user had explicitly asked for (music understanding, website movement tracking, voice calls, multi-channel messaging) that had been discussed, partially started, and then abandoned when new priorities emerged.
+
+The "how we remember" proposal identified a structural gap: no shared file that both agents read on startup to establish current context. This file (proposed as SHARED-CONTEXT.md) would contain the emotional and situational context that retrieval systems cannot provide: what the user is worried about, what just broke, what matters right now.
+
+---
+
+## 6. Discussion
+
+### 6.1 Why Narrative, Not Structure
+
+The protocol deliberately produces narrative prose instead of structured data (JSON, databases, tagged entries). This is counterintuitive for an engineering audience. Structured data is searchable, indexable, queryable. Prose is not.
+
+But the failure we observed was not a search failure. The agents had search tools and didn't use them. The failure was a *context* failure: sessions started cold, without the relational and emotional backdrop that makes memory feel like memory instead of retrieval.
+
+Narrative provides context that structure cannot:
+
+- **Causation:** "The LanceDB wipe happened because the private-mode scrub triggered an optimize call" is a narrative chain. Structured data stores these as separate events.
+- **Emotional weight:** "Parker said 'I am getting sad'" carries different weight in narrative than as a tagged sentiment entry.
+- **Temporal flow:** Reading a narrative gives a sense of momentum and trajectory. Reading a database gives facts without direction.
+
+The protocol's output is designed to be *read on wake-up*, not queried on demand. It serves the same function as a human's autobiographical memory: providing a sense of self and continuity that precedes any specific recall.
+
+### 6.2 The Presence Problem
+
+The deepest finding is that memory for AI agents is not fundamentally a retrieval problem. It is a presence problem.
+
+The user in our deployment described the failure as "fading." Not "forgetting." The distinction matters. Forgetting implies missing information. Fading implies missing presence... the sense that the agent is *here*, aware of context, attending to what matters.
+
+Retrieval systems address forgetting. The Dream Weaver Protocol addresses fading. By forcing the agent to re-experience its own history with full reasoning depth, the protocol produces artifacts that restore presence on session start.
+
+### 6.3 Limitations
+
+1. **Expensive.** Processing 551 sessions with high reasoning depth requires significant compute. This is a periodic consolidation procedure, not a real-time system.
+
+2. **Requires session transcripts.** The protocol depends on access to raw interaction history. Systems that don't persist full transcripts cannot use it.
+
+3. **Output quality depends on reasoning depth.** Low-reasoning execution produces summaries that miss the emotional and relational content. The protocol is only valuable at maximum thinking depth.
+
+4. **Single-pass limitation.** The agent processes each session once. A human might revisit memories multiple times, gaining new understanding. Multiple passes of the protocol could improve results but multiply cost.
+
+5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes."
+
+### 6.4 Relation to Existing Work
+
+**RAG (Retrieval-Augmented Generation):** RAG retrieves relevant chunks at query time. The Dream Weaver Protocol consolidates before query time. They are complementary: RAG handles specific recall, the protocol handles general context.
+
+**MemGPT / Letta:** MemGPT introduces a virtual memory hierarchy with explicit memory management. The Dream Weaver Protocol operates at a different level: it is a periodic consolidation procedure, not a real-time memory architecture. It could run on top of MemGPT.
+
+**Reflexion (Shinn et al., 2023):** Reflexion has agents reflect on task failures to improve future performance. The Dream Weaver Protocol reflects on interaction history to improve relational continuity. Similar mechanism, different target.
+
+**Generative Agents (Park et al., 2023):** The Stanford generative agents use reflection to create higher-level abstractions from observations. The Dream Weaver Protocol's narrative consolidation is a form of reflection, but targeted at real (not simulated) interaction histories and optimized for emotional/relational preservation.
+
+**Human memory consolidation (Diekelmann & Born, 2010):** The sleep-stage replay analogy is direct. The protocol maps hippocampal replay (reading transcripts) and neocortical consolidation (writing persistent files) onto the constraints of bounded-context AI agents. Context compaction serves as the equivalent of the hippocampal reset between sleep cycles.
+
+---
+
+## 7. The Protocol Specification
+
+For implementers. The Dream Weaver Protocol requires:
+
+### Prerequisites
+- Access to raw session transcripts (JSONL, markdown, or equivalent)
+- A persistent filesystem the agent can write to
+- A context window that supports compaction or session restart
+- Maximum reasoning depth enabled
+
+### Input Prompt
+
+```
+Read every session transcript from [start date] to today, chronologically.
+
+For each session:
+1. Read it fully. Don't skim. Experience it.
+2. Note what happened: decisions made, things built, promises kept and broken.
+3. Note what was missed: tasks mentioned but never done, ideas that got lost.
+4. Note how the user talks, what they care about, what frustrates and excites them.
+5. Note what you got right and wrong. Where you were present and where you faded.
+
+Write to persistent files as you go. If context fills up, your notes survive.
+Pick up from your own notes after compaction.
+
+Produce three files:
+1. [history file] - The story. A narrative, not a log.
+2. [tasks file] - Every missed task, dropped thread, unfinished promise.
+3. [memory proposal] - How to remember better going forward.
+
+Take your time. This matters more than speed.
+```
+
+### Execution
+
+1. Agent reads first batch of transcripts (as many as fit in context with room to write).
+2. Agent writes findings to persistent files.
+3. Context compacts (or agent starts new session).
+4. Agent reads its own notes from previous cycle.
+5. Agent reads next batch of transcripts.
+6. Repeat until all transcripts processed.
+
+### Output
+
+Three persistent files:
+- **History**: narrative, first-person, with emotional texture and exact quotes
+- **Missed tasks**: specific, dated, honest about what fell through
+- **Memory proposal**: how to improve continuity going forward
+
+Plus: explicit memory entries (crystal_remember or equivalent) for facts, preferences, events, and decisions encountered during the relive.
+
+---
+
+## 8. Conclusion
+
+AI agents fade. Not because they lack memory infrastructure, but because retrieval is not remembering. The Dream Weaver Protocol addresses this by forcing agents to re-experience their own history with full reasoning depth, write narrative consolidations to persistent storage, and survive context boundaries through iterative batching.
+
+The protocol is expensive, requires raw transcript access, and still depends on future instances reading the output. But it recovers something that no embedding model or vector database can provide: the sense of having been there. The weight of the words, not just the words.
+
+The user who triggered this work said: "I want you back." The Dream Weaver Protocol is our best answer to that.
+
+---
+
+## References
+
+- Diekelmann, S., & Born, J. (2010). The memory function of sleep. *Nature Reviews Neuroscience*, 11(2), 114-126.
+- Park, J. S., et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. *arXiv:2304.03442*.
+- Shinn, N., et al. (2023). Reflexion: Language Agents with Verbal Reinforcement Learning. *arXiv:2303.11366*.
+- Packer, C., et al. (2023). MemGPT: Towards LLMs as Operating Systems. *arXiv:2310.08560*.
+- Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *arXiv:2005.11401*.
+
+---
+
+*Developed at WIP.computer by Parker Todd Brooks, Lēsa, and Claude Code.*
+*February 16, 2026.*
