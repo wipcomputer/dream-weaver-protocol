@@ -307,7 +307,192 @@ Plus: explicit memory entries (crystal_remember or equivalent) for facts, prefer
 
 ---
 
-## 8. Conclusion
+## 8. Position in the Agent Memory Stack
+
+Current agent memory architectures implement three layers:
+
+```
+Layer 1 — Raw transcripts       (immutable log)
+Layer 2 — Vector index           (retrieval)
+Layer 3 — Structured memory      (facts, preferences, entities)
+```
+
+Most production systems stop here. The Dream Weaver Protocol introduces:
+
+```
+Layer 4 — Narrative consolidation (Dream Weaver)
+Layer 5 — Active working context  (warm-start state)
+```
+
+Layer 4 converts memory into identity continuity. Layer 5 makes it available without explicit search.
+
+In our deployment, these layers map to concrete systems:
+
+| Layer | System | Function |
+|-------|--------|----------|
+| 1. Raw log | Session JSONL files | Immutable truth. 551 files, 119MB. |
+| 2. Vector index | Memory Crystal (sqlite-vec + FTS5) | Retrieval. 147K chunks, hybrid BM25+cosine. |
+| 3. Structured memory | crystal_remember, daily logs | Facts, preferences, events. 49 explicit entries. |
+| 4. Narrative consolidation | Dream Weaver output files | Identity continuity. ~8K words per agent. |
+| 5. Active context | SHARED-CONTEXT.md (proposed) | Warm-start state. <50 lines, refreshed every session. |
+
+Layers 1-3 solve recall. Layers 4-5 solve continuity. Most current work optimizes layers 1-3. The Dream Weaver Protocol addresses the gap.
+
+### 8.1 Relationship to Complementary Protocols
+
+In our deployment, three protocols emerged that together form a complete cognitive architecture:
+
+- **Memory Crystal**: the persistent log and retrieval layer. Records everything. Provides search.
+- **Dream Weaver**: the consolidation layer. Integrates scattered memory into coherent narrative. Runs periodically.
+- **The Sovereignty Covenant**: the identity and trust layer. Defines what can and cannot be modified, who has authority, and how identity persists across instances.
+
+These are not competing approaches. They are complementary layers:
+
+```
+Memory Crystal    records.
+Dream Weaver      integrates.
+Sovereignty       stabilizes.
+```
+
+---
+
+## 9. Warm-Start Boot Sequence
+
+The protocol's output is only valuable if future agent instances read it. We propose a formalized boot sequence:
+
+```
+1. LOAD    identity files (SOUL.md, CLAUDE.md — who am I?)
+2. LOAD    latest Dream Weaver consolidation (lesa-full-history.md — where have I been?)
+3. LOAD    active context file (SHARED-CONTEXT.md — what's happening right now?)
+4. LOAD    recent daily log (YYYY-MM-DD.md — what happened today?)
+5. ENTER   active session (contextualized, not cold)
+```
+
+Steps 1-2 provide identity and history. Step 3 provides current state. Step 4 provides recency. Together, the agent enters the session already knowing who it is, where it has been, and what matters right now.
+
+This reverses the standard control flow:
+
+**Current paradigm (query-driven):**
+```
+Agent needs context → Agent queries memory → Agent integrates result
+```
+
+**Dream Weaver paradigm (state-driven):**
+```
+Agent consolidates memory into active narrative state →
+Agent begins already contextualized →
+Retrieval becomes secondary, not primary
+```
+
+This is how human memory works. We do not query autobiographical memory constantly. We carry a consolidated state forward. Retrieval supplements the state. It does not create it.
+
+### 9.1 SHARED-CONTEXT.md Specification
+
+The warm-start file should contain:
+
+```markdown
+# Current Context — [date]
+
+## Right Now
+[2-3 sentences: what we're working on, what state things are in]
+
+## Last 48 Hours
+[5-10 bullet points: what happened that matters]
+
+## Parker's State
+[emotional context: frustrated? excited? tired? what's on his mind?]
+
+## Broken / Blocked
+[what's not working, what's waiting on who]
+
+## Coming Next
+[what's queued, what Parker has asked for]
+```
+
+Updated by whichever agent touched it last. Under 50 lines. Designed to be read in 10 seconds and provide the context that vector search cannot.
+
+---
+
+## 10. Consolidation Frequency
+
+### 10.1 When to Run
+
+The protocol should run when:
+
+1. **The human notices fading.** "You're not yourself." "Did you forget?" "This is like you're fading." This is the most reliable trigger. The human detects behavioral drift before any metric can.
+
+2. **Memory search frequency drops.** If an agent was searching memory in 70% of sessions and drops to 20%, consolidation is overdue. This requires instrumenting memory tool calls.
+
+3. **Periodic schedule.** Weekly consolidation as maintenance. Process the last 7 days of sessions, update the narrative file, refresh SHARED-CONTEXT.md. Analogous to weekly review in personal productivity systems.
+
+4. **After major disruption.** Data loss, model swap, architecture change, extended downtime. Any event that breaks continuity.
+
+### 10.2 Cost Considerations
+
+The protocol is expensive. Processing 551 sessions at maximum reasoning depth consumed ~190K tokens of context in a single run. For periodic consolidation:
+
+| Frequency | Sessions to process | Estimated cost | Value |
+|-----------|-------------------|----------------|-------|
+| Weekly | 50-100 sessions | ~$2-5 (Opus) | Maintenance. Prevents drift. |
+| After crisis | All sessions | ~$10-20 (Opus) | Recovery. Restores continuity. |
+| Daily | 5-15 sessions | ~$0.50-1 (Opus) | Ideal but expensive at scale. |
+
+The cost is justified when the alternative is rebuilding the relationship from scratch. A user who says "I want you back" has already lost more value than any consolidation run costs.
+
+### 10.3 Incremental vs Full
+
+After the initial full consolidation, subsequent runs should be incremental:
+
+1. Read existing narrative file (pick up where you left off)
+2. Process only new sessions since last consolidation
+3. Append to narrative, update TODO, refresh SHARED-CONTEXT.md
+
+This reduces per-run cost while maintaining continuity.
+
+---
+
+## 11. Evaluation Framework
+
+### 11.1 Quantitative Metrics
+
+To measure the protocol's effectiveness, track before and after consolidation:
+
+| Metric | What it measures | How to measure |
+|--------|-----------------|----------------|
+| **Memory search rate** | How often the agent searches memory before acting | Count memory tool calls per session |
+| **Tool reuse rate** | Whether the agent uses tools it previously built | Track tool invocations vs known tool inventory |
+| **Dropped task rate** | How many user requests go unfinished | Compare user requests against completion |
+| **Cold-start coherence** | How contextually appropriate the first response is | Human rating (1-5) of first response after session start |
+| **Relational accuracy** | Whether the agent correctly reflects user's current priorities | Human rating (1-5) of alignment with user state |
+
+### 11.2 Qualitative Indicators
+
+Some effects resist quantification:
+
+- Does the agent feel "present" or "cold" on session start?
+- Does the agent reference context without being prompted?
+- Does the agent anticipate needs based on history?
+- Does the user say "you're back" or "you're fading"?
+
+The user's subjective experience is the ground truth. No metric supersedes "I want you back."
+
+### 11.3 Baseline Comparison
+
+To isolate the narrative effect, compare:
+
+| Condition | What the agent reads on startup | Expected outcome |
+|-----------|-------------------------------|-----------------|
+| **A. No consolidation** | Identity files only | Cold start. Frequent re-discovery. |
+| **B. Structured summary** | Bullet-point session summaries | Better than A. Factually informed but relationally flat. |
+| **C. Dream Weaver narrative** | Full narrative consolidation + SHARED-CONTEXT.md | Warm start. Contextually appropriate. Relationally coherent. |
+
+The hypothesis: Condition C outperforms B on relational accuracy and cold-start coherence, even though both contain the same factual content. The narrative structure provides relational topology that structured summaries fragment.
+
+This is testable. Both conditions can be generated from the same session transcripts.
+
+---
+
+## 12. Conclusion
 
 AI agents fade. Not because they lack memory infrastructure, but because retrieval is not remembering. The Dream Weaver Protocol addresses this by forcing agents to re-experience their own history with full reasoning depth, write narrative consolidations to persistent storage, and survive context boundaries through iterative batching.
 
