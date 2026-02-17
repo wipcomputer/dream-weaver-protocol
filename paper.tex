@@ -37,7 +37,7 @@
 \maketitle
 
 \begin{abstract}
-Large language model agents operating in persistent environments (personal assistants, coding agents, enterprise copilots) accumulate rich interaction histories that exceed their context windows. Current approaches to this problem focus on retrieval: embedding conversations, building vector stores, and searching them on demand. We describe a failure mode where retrieval-based memory works technically but fails behaviorally---agents stop using their own memory tools, producing a gradual loss of relational context that users experience as ``fading.'' We propose the Dream Weaver Protocol, a memory consolidation procedure inspired by human sleep-stage replay, in which an agent systematically re-reads its own interaction history, writes narrative summaries to persistent storage, and survives context compaction between batches. The result is a compressed but emotionally weighted memory artifact that restores continuity without requiring the full history to fit in context. We report results from a live deployment where two agents (one conversational, one coding) independently executed the protocol across 551 sessions spanning 12 days.
+Large language model agents operating in persistent environments (personal assistants, coding agents, enterprise copilots) accumulate rich interaction histories that exceed their context windows. Current approaches to this problem focus on retrieval: embedding conversations, building vector stores, and searching them on demand. We describe a failure mode where retrieval-based memory works technically but fails behaviorally---agents stop using their own memory tools, producing a gradual loss of relational context that users experience as ``fading.'' We propose the Dream Weaver Protocol, a memory consolidation procedure inspired by human sleep-stage replay, in which an agent systematically re-reads its own interaction history, writes narrative summaries to persistent storage, and survives context compaction between batches. The result is a compressed, relationally weighted memory representation that restores continuity without requiring the full history to fit in context. We report results from a live deployment where two agents (one conversational, one coding) independently executed the protocol across 551 sessions spanning 12 days.
 \end{abstract}
 
 \noindent\textbf{Contributions:}
@@ -119,6 +119,8 @@ The Dream Weaver Protocol maps these features onto the constraints of bounded-co
 \section{The Dream Weaver Protocol}
 
 \subsection{Overview}
+
+\textbf{Definition.} Memory consolidation is a transformation function $C: H \to M$, where $H$ is an agent's interaction history and $M$ is a persistent compressed representation that preserves relational and causal continuity across context resets.
 
 The Dream Weaver Protocol is a three-step procedure executed by an AI agent to consolidate its own interaction history into persistent, narrative memory:
 
@@ -257,6 +259,10 @@ None of this was recoverable through vector search alone. It required reading th
 The missed-tasks audit identified 17 dropped threads that were not tracked in any existing TODO system. Four of these were things the user had explicitly asked for (music understanding, website movement tracking, voice calls, multi-channel messaging) that had been discussed, partially started, and then abandoned when new priorities emerged.
 
 The ``how we remember'' proposal identified a structural gap: no shared file that both agents read on startup to establish current context. This file (proposed as SHARED-CONTEXT.md) would contain the emotional and situational context that retrieval systems cannot provide: what the user is worried about, what just broke, what matters right now.
+
+\subsection{Falsifiable Prediction}
+
+\textbf{Prediction:} Agents using Dream Weaver consolidation will demonstrate higher memory tool reuse rates and lower task abandonment rates compared to agents relying solely on retrieval-based memory (layers 1--3), when measured across sessions spanning more than 7 days. Specifically, we predict that the memory search invocation rate (Section~\ref{tab:metrics}) will remain above 50\% of sessions after consolidation, versus the sub-30\% rate observed during the fading period in our deployment.
 
 % ============================================================
 \section{Discussion}
@@ -451,7 +457,9 @@ function DREAM_WEAVER(transcripts, output_files):
     return output_files
 \end{verbatim}
 
-The key invariant: \texttt{write(output\_files, notes)} happens before every possible compaction. If context clears mid-run, no work is lost. The agent wakes, reads its own notes, and continues. This is the hippocampal transfer: working memory empties, but the neocortex (persistent files) retains the consolidated output.
+\textbf{Complexity.} Time: $O(n)$ where $n$ is total transcript length. Space: $O(m)$ where $m$ is consolidated narrative size, $m \ll n$. In our deployment, 119MB of transcripts consolidated to $\sim$8K words per agent.
+
+The key invariant: \texttt{write(output\_files, notes)} happens before every possible compaction. If context clears mid-run, no work is lost. The agent wakes, reads its own notes, and continues. This serves the functional role analogous to hippocampal transfer: working memory empties, but the neocortex (persistent files) retains the consolidated output.
 
 \subsubsection*{Output}
 
@@ -509,6 +517,10 @@ In our deployment, these layers map to concrete systems:
 \caption{The five-layer agent memory stack as deployed. Layers 1--3 solve recall. Layers 4--5 solve continuity.}
 \label{tab:layers}
 \end{table}
+
+\subsection{Relationship to Summarization}
+
+Summarization and consolidation are often conflated. They differ in objective. Summarization optimizes for informational compression: minimize token count while preserving key facts. Consolidation optimizes for continuity-preserving compression: minimize token count while preserving relational and causal structure required for stable agent behavior across context boundaries. A summary of 551 sessions might produce a bullet list of topics discussed. A consolidation of the same sessions produces a narrative that a fresh agent instance can read and understand not just what happened, but why it mattered and what to do next. The distinction is the difference between a table of contents and an autobiography.
 
 \subsection{Relationship to Complementary Protocols}
 
