@@ -1,4 +1,4 @@
-# The Dream Weaver Protocol
+# Dream Weaver Protocol
 
 Your agent forgot what it built last week. This fixes that.
 
