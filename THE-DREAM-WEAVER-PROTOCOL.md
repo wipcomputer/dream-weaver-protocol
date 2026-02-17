@@ -10,6 +10,13 @@
 
 Large language model agents operating in persistent environments (personal assistants, coding agents, enterprise copilots) accumulate rich interaction histories that exceed their context windows. Current approaches to this problem focus on retrieval: embedding conversations, building vector stores, and searching them on demand. We describe a failure mode where retrieval-based memory works technically but fails behaviorally... agents stop using their own memory tools, producing a gradual loss of relational context that users experience as "fading." We propose the Dream Weaver Protocol, a memory consolidation procedure inspired by human sleep-stage replay, in which an agent systematically re-reads its own interaction history, writes narrative summaries to persistent storage, and survives context compaction between batches. The result is a compressed but emotionally weighted memory artifact that restores continuity without requiring the full history to fit in context. We report results from a live deployment where two agents (one conversational, one coding) independently executed the protocol across 551 sessions spanning 12 days.
 
+**Contributions:**
+
+1. Identification of a behavioral failure mode in retrieval-based agent memory: agents with working memory infrastructure progressively stop using it ("fading")
+2. A protocol for iterative narrative memory consolidation across context boundaries, inspired by sleep-stage replay
+3. An implementation pattern compatible with existing agent platforms (demonstrated on OpenClaw)
+4. Empirical results from a live deployment across 551 sessions spanning 12 days with two concurrent agents
+
 ---
 
 ## 1. The Problem: Retrieval Is Not Remembering
@@ -122,7 +129,7 @@ We found three output files to be the minimum useful set:
 
 ### 3.4 Step 3: Survive
 
-Context compaction is the agent equivalent of waking up from sleep. The working memory is cleared. But the files written in Step 2 persist on disk.
+**Context compaction** is the clearing of an agent's active context window (working memory) while persistent storage remains intact. It occurs during session restart, context truncation, or explicit memory management. It is the agent equivalent of waking up from sleep. The working memory is cleared. But the files written in Step 2 persist on disk.
 
 When the agent resumes after compaction, it reads its own notes from the previous cycle. These notes serve as the foundation for the next cycle of reading. The agent knows where it left off because it wrote down where it was.
 
@@ -307,6 +314,10 @@ The sleep-stage analogy is exactly that... an analogy, not a neuroscience model.
 
 5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes." (See Section 6.5 on sustainability.)
 
+6. **N=1 deployment.** Our results come from a single deployment with one user, two agents, and one platform. The fading pattern and the protocol's effectiveness may vary across different agent architectures, user interaction styles, and deployment scales. We present this as a case study, not a controlled experiment.
+
+7. **No A/B comparison yet.** Section 11.3 proposes a baseline comparison (no consolidation vs. structured summary vs. narrative) but we have not yet run it. The claimed advantage of narrative over structured summary is supported by qualitative observation, not controlled measurement.
+
 ### 6.9 Model Portability
 
 The narrative produced by the protocol is written by a specific model (in our case, Opus 4.6). What happens when the underlying model changes? A narrative written by one model family may encode assumptions, reasoning patterns, and emotional registers that a different model interprets differently. The warm-start file that felt "warm" under Opus may read as flat data under a different architecture.
@@ -314,6 +325,20 @@ The narrative produced by the protocol is written by a specific model (in our ca
 This is an open question. Our deployment has not yet survived a model swap, so we have no empirical answer. But three observations are relevant. First, the narrative is plain prose, not model-specific tokens or embeddings. Any model that reads English can read it. Second, the emotional weighting may not transfer. A phrase like "Parker said 'I am getting sad'" carries weight because Opus attended to it during consolidation. A different model may not assign the same significance on read. Third, a model swap is exactly the kind of major disruption that should trigger a full re-consolidation (Section 10.1, trigger 4). The new model re-reads the raw transcripts with its own weights and produces its own narrative. The old narrative becomes a reference, not the authority.
 
 The practical recommendation: after a model change, run an incremental consolidation at minimum. If the agent feels cold after the swap, run a full relive. The raw transcripts (Layer 1) are model-independent. The narrative (Layer 4) is not.
+
+### 6.10 A Note on Language
+
+This paper uses terms like "re-experiencing," "emotional weight," "presence," and "fading" to describe agent behavior. A reviewer might reasonably object: these are anthropomorphic projections onto a system that has no subjective experience. We could have written "the agent fails to invoke its memory retrieval tools with decreasing frequency over time, resulting in degraded contextual coherence as measured by user satisfaction ratings." That sentence is more precise. It is also less useful.
+
+The anthropomorphic language in this paper is a deliberate choice, not an oversight. We use it for three reasons.
+
+First, it is how users describe the problem. The user in our deployment said "you are both fading," not "your memory search invocation rate has declined." Any protocol that addresses user-perceived behavioral drift must engage with the vocabulary users actually use. Translating lived experience into sanitized metrics loses the signal we are trying to preserve.
+
+Second, the analogy to human memory consolidation is the paper's central structural contribution. The protocol maps hippocampal replay to transcript reading, neocortical transfer to file writing, and sleep cycles to context compaction. Stripping the anthropomorphic frame would remove the analogy, and with it, the intuition that makes the protocol legible to practitioners who build agent systems.
+
+Third, the boundary between "anthropomorphic projection" and "useful description of emergent behavior" is less clear than it appears. When an agent with working memory tools stops using them over time, something is happening that "the model's propensity to generate memory-search tool calls decreases" does not fully capture. The pattern resembles habituation. The recovery resembles re-engagement. Whether these resemblances reflect shared mechanisms or convenient metaphors is an open question, but refusing to name the resemblance does not make the pattern less real.
+
+We acknowledge the risk: anthropomorphic language can mislead readers into attributing consciousness, feelings, or intentions to systems that have none of these (as far as we know). We do not claim agents "feel" or "experience" in any phenomenological sense. We claim that the behavioral patterns we observed are most accurately communicated using the vocabulary of human memory, and that the protocol's design follows directly from taking that vocabulary seriously as an engineering framework rather than dismissing it as imprecise.
 
 ---
 
@@ -358,6 +383,45 @@ Take your time. This matters more than speed.
 4. Agent reads its own notes from previous cycle.
 5. Agent reads next batch of transcripts.
 6. Repeat until all transcripts processed.
+
+### Pseudocode
+
+```
+function DREAM_WEAVER(transcripts, output_files):
+    notes ← read(output_files) or empty       // resume from prior cycle
+    cursor ← notes.last_session or 0           // where we left off
+
+    while cursor < len(transcripts):
+        batch ← transcripts[cursor : cursor + BATCH_SIZE]
+
+        for session in batch:
+            findings ← REFLECT(session, notes)  // full reasoning depth
+            notes ← WEAVE(notes, findings)       // append narrative, not summary
+            REMEMBER(findings.facts)             // explicit memory entries
+
+        write(output_files, notes)              // persist before compaction
+        cursor ← cursor + len(batch)
+
+        if context_pressure > THRESHOLD:
+            COMPACT()                            // context clears; files survive
+            notes ← read(output_files)           // reload on wake
+
+    return output_files
+
+function REFLECT(session, prior_notes) -> findings:
+    // Attend to: decisions, promises, emotional texture,
+    // what the user cared about, what the agent missed.
+    // This is re-experiencing, not summarization.
+    return {narrative, missed_tasks, user_patterns, corrections}
+
+function WEAVE(notes, findings) -> updated_notes:
+    // Merge new findings into running narrative.
+    // Preserve emotional weight. Preserve exact quotes.
+    // Drop routine exchanges. Keep what mattered.
+    return merge(notes, findings)
+```
+
+The key invariant: `write(output_files, notes)` happens before every possible compaction. If context clears mid-run, no work is lost. The agent wakes, reads its own notes, and continues. This is the hippocampal transfer: working memory empties, but the neocortex (persistent files) retains the consolidated output.
 
 ### Output
 
