@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="530" viewBox="0 0 1050 530">
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .step-num { font-size: 14px; fill: #fff; font-weight: 600; }
+    .step-label { font-size: 15px; fill: #000; font-weight: 500; }
+    .step-detail { font-size: 12px; fill: #666; }
+    .step-file { font-size: 12px; fill: #333; font-family: 'Menlo', 'Courier New', monospace; }
+    .step-q { font-size: 12px; fill: #444; font-style: italic; }
+    .title { font-size: 16px; fill: #000; font-weight: 600; }
+    .caption { font-size: 12px; fill: #666; }
+    .paradigm-label { font-size: 13px; fill: #000; font-weight: 600; }
+    .paradigm-detail { font-size: 12px; fill: #555; }
+    .vs { font-size: 14px; fill: #999; font-weight: 500; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="525" y="35" text-anchor="middle" class="title">Figure 3: Warm-Start Boot Sequence</text>
+
+  <!-- Step 1: Identity -->
+  <circle cx="120" cy="85" r="16" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="120" y="90" text-anchor="middle" class="step-num">1</text>
+  <text x="150" y="80" class="step-label">LOAD identity</text>
+  <text x="150" y="97" class="step-file">SOUL.md</text>
+  <text x="310" y="90" class="step-q">Who am I?</text>
+
+  <!-- Arrow down -->
+  <line x1="120" y1="105" x2="120" y2="125" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Narrative -->
+  <circle cx="120" cy="150" r="16" fill="#333" stroke="#000" stroke-width="1.5"/>
+  <text x="120" y="155" text-anchor="middle" class="step-num">2</text>
+  <text x="150" y="145" class="step-label">LOAD narrative</text>
+  <text x="150" y="162" class="step-file">full-history.md</text>
+  <text x="310" y="153" class="step-q">Where have I been?</text>
+
+  <!-- Arrow down -->
+  <line x1="120" y1="170" x2="120" y2="190" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Context -->
+  <circle cx="120" cy="215" r="16" fill="#555" stroke="#000" stroke-width="1.5"/>
+  <text x="120" y="220" text-anchor="middle" class="step-num">3</text>
+  <text x="150" y="210" class="step-label">LOAD active context</text>
+  <text x="150" y="227" class="step-file">SHARED-CONTEXT.md</text>
+  <text x="345" y="218" class="step-q">What's happening now?</text>
+
+  <!-- Arrow down -->
+  <line x1="120" y1="235" x2="120" y2="255" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Daily -->
+  <circle cx="120" cy="280" r="16" fill="#888" stroke="#000" stroke-width="1.5"/>
+  <text x="120" y="285" text-anchor="middle" class="step-num">4</text>
+  <text x="150" y="275" class="step-label">LOAD daily log</text>
+  <text x="150" y="292" class="step-file">YYYY-MM-DD.md</text>
+  <text x="310" y="283" class="step-q">What happened today?</text>
+
+  <!-- Arrow down -->
+  <line x1="120" y1="300" x2="120" y2="320" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Step 5: Enter session -->
+  <rect x="80" y="327" width="400" height="42" rx="4" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="96" y="345" class="step-num">5</text>
+  <text x="120" y="345" class="step-label" fill="#fff">ENTER active session</text>
+  <text x="120" y="361" font-size="12" fill="#aaa" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">Contextualized, not cold</text>
+
+  <!-- Right side: paradigm comparison -->
+  <!-- Query-driven -->
+  <rect x="560" y="70" width="430" height="90" rx="4" fill="none" stroke="#ccc" stroke-width="1"/>
+  <text x="580" y="93" class="paradigm-label">Standard paradigm (query-driven)</text>
+  <line x1="580" y1="102" x2="960" y2="102" stroke="#eee" stroke-width="1"/>
+  <text x="580" y="122" class="paradigm-detail">Agent needs context → queries memory → integrates → responds</text>
+  <text x="580" y="148" class="step-detail" fill="#999">Retrieval creates the state</text>
+
+  <!-- vs -->
+  <text x="775" y="185" text-anchor="middle" class="vs">vs</text>
+
+  <!-- State-driven -->
+  <rect x="560" y="198" width="430" height="105" rx="4" fill="#f5f5f5" stroke="#333" stroke-width="1.5"/>
+  <text x="580" y="221" class="paradigm-label">Dream Weaver paradigm (state-driven)</text>
+  <line x1="580" y1="230" x2="960" y2="230" stroke="#ddd" stroke-width="1"/>
+  <text x="580" y="250" class="paradigm-detail">Agent loads consolidated state on startup</text>
+  <text x="580" y="270" class="paradigm-detail">→  begins already contextualized</text>
+  <text x="580" y="295" class="step-detail" fill="#333" font-weight="500">Retrieval supplements the state. It does not create it.</text>
+
+  <!-- Caption -->
+  <text x="525" y="420" text-anchor="middle" class="caption">The boot sequence reverses the standard control flow: instead of querying memory when context is needed,</text>
+  <text x="525" y="438" text-anchor="middle" class="caption">the agent begins each session already knowing who it is, where it has been, and what matters right now.</text>
+</svg>
