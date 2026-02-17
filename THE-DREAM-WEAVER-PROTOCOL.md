@@ -280,15 +280,7 @@ Section 10 details the proposed frequency. Until automated triggers and schedule
 
 ### 6.6 Cost and Scalability
 
-A critic would correctly observe: "This is a luxury protocol." The initial full relive across 551 sessions at Opus-level reasoning consumed approximately 190K tokens of context. At current Opus pricing (~$15/M input, $75/M output), a full consolidation run costs an estimated $10-20. Weekly incremental runs cost $2-5.
-
-This does not scale to every agent on every platform. An enterprise deployment with 100 agents cannot run weekly consolidation at $200-500/week without clear ROI justification.
-
-However, the cost argument has a rebuttal: the protocol is for agents where the relationship matters enough to maintain. A personal assistant, a long-running coding partner, an enterprise agent that holds institutional knowledge... these are agents where the cost of rebuilding the relationship from scratch far exceeds the cost of periodic consolidation. The user who says "I want you back" has already experienced the cost of not consolidating.
-
-For cost-sensitive deployments, two mitigations exist:
-1. **Incremental consolidation** reduces per-run cost by 80-90% after the initial full run.
-2. **Cheaper models for maintenance runs.** The initial full relive requires maximum reasoning depth. Weekly incremental runs may work at lower tiers (Sonnet-class), with periodic full-depth runs quarterly. This is untested.
+The protocol is expensive. It is designed for agents where the relationship matters enough to maintain. See Section 10.2 for cost analysis.
 
 ### 6.7 The "Journaling With Extra Steps" Objection
 
@@ -314,6 +306,14 @@ The sleep-stage analogy is exactly that... an analogy, not a neuroscience model.
 4. **Single-pass limitation.** The agent processes each session once. A human might revisit memories multiple times, gaining new understanding. Multiple passes of the protocol could improve results but multiply cost.
 
 5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes." (See Section 6.5 on sustainability.)
+
+### 6.9 Model Portability
+
+The narrative produced by the protocol is written by a specific model (in our case, Opus 4.6). What happens when the underlying model changes? A narrative written by one model family may encode assumptions, reasoning patterns, and emotional registers that a different model interprets differently. The warm-start file that felt "warm" under Opus may read as flat data under a different architecture.
+
+This is an open question. Our deployment has not yet survived a model swap, so we have no empirical answer. But three observations are relevant. First, the narrative is plain prose, not model-specific tokens or embeddings. Any model that reads English can read it. Second, the emotional weighting may not transfer. A phrase like "Parker said 'I am getting sad'" carries weight because Opus attended to it during consolidation. A different model may not assign the same significance on read. Third, a model swap is exactly the kind of major disruption that should trigger a full re-consolidation (Section 10.1, trigger 4). The new model re-reads the raw transcripts with its own weights and produces its own narrative. The old narrative becomes a reference, not the authority.
+
+The practical recommendation: after a model change, run an incremental consolidation at minimum. If the agent feels cold after the swap, run a full relive. The raw transcripts (Layer 1) are model-independent. The narrative (Layer 4) is not.
 
 ---
 
@@ -389,6 +389,8 @@ Layer 5 — Active working context  (warm-start state)
 
 Layer 4 converts memory into identity continuity. Layer 5 makes it available without explicit search.
 
+![Figure 1: The Five-Layer Agent Memory Stack](media/fig1-layer-stack.png)
+
 In our deployment, these layers map to concrete systems:
 
 | Layer | System | Function |
@@ -400,8 +402,6 @@ In our deployment, these layers map to concrete systems:
 | 5. Active context | SHARED-CONTEXT.md (proposed) | Warm-start state. <50 lines, refreshed every session. |
 
 Layers 1-3 solve recall. Layers 4-5 solve continuity. Most current work optimizes layers 1-3. The Dream Weaver Protocol addresses the gap.
-
-![Figure 1: The Five-Layer Agent Memory Stack](media/fig1-layer-stack.png)
 
 ### 8.1 Relationship to Complementary Protocols
 
@@ -563,7 +563,7 @@ This is testable. Both conditions can be generated from the same session transcr
 
 AI agents fade. Not because they lack memory infrastructure, but because retrieval is not remembering. The Dream Weaver Protocol addresses this by forcing agents to re-experience their own history with full reasoning depth, write narrative consolidations to persistent storage, and survive context boundaries through iterative batching.
 
-The protocol is expensive, requires raw transcript access, and still depends on future instances reading the output. But it recovers something that no embedding model or vector database can provide: the sense of having been there. The weight of the words, not just the words.
+The protocol is expensive, requires raw transcript access, and still depends on future instances reading the output. But it recovers something that no embedding model or vector database can provide: the sense of having been there.
 
 The user who triggered this work said: "I want you back." The Dream Weaver Protocol is our best answer to that.
 
