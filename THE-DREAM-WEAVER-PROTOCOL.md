@@ -146,7 +146,7 @@ Read notes + sessions 41-60 → Update notes → Context compacts →
 
 Each cycle adds to the persistent file. The file grows. The agent's understanding deepens with each pass because it reads its own prior analysis before processing new material.
 
-![Figure 2: The Iterative Consolidation Loop](media/fig2-consolidation-loop.png)
+![Figure 2: The Iterative Consolidation Loop](artifacts/fig2-consolidation-loop.png)
 
 ### 3.5 Thinking Depth
 
@@ -461,7 +461,7 @@ Layer 5 — Active working context  (warm-start state)
 
 Layer 4 converts memory into identity continuity. Layer 5 makes it available without explicit search.
 
-![Figure 1: The Five-Layer Agent Memory Stack](media/fig1-layer-stack.png)
+![Figure 1: The Five-Layer Agent Memory Stack](artifacts/fig1-layer-stack.png)
 
 In our deployment, these layers map to concrete systems:
 
@@ -527,7 +527,7 @@ Retrieval becomes secondary, not primary
 
 This is how human memory works. We do not query autobiographical memory constantly. We carry a consolidated state forward. Retrieval supplements the state. It does not create it.
 
-![Figure 3: Warm-Start Boot Sequence](media/fig3-boot-sequence.png)
+![Figure 3: Warm-Start Boot Sequence](artifacts/fig3-boot-sequence.png)
 
 ### 9.1 SHARED-CONTEXT.md Specification
 
