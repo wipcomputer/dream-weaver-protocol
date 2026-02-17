@@ -20,11 +20,23 @@ All current LLM agents operate within fixed context windows (typically 128K-200K
 
 ### 1.2 The Standard Solution: Embed and Retrieve
 
-The standard approach is retrieval-augmented generation (RAG): chunk conversations, embed them into vector space, store them in a database, and retrieve relevant chunks at query time. This works for factual recall ("what API key do we use?") but fails for relational recall ("what does Parker care about right now?").
+The standard approach is retrieval-augmented generation (RAG): chunk conversations, embed them into vector space, store them in a database, and retrieve relevant chunks at query time. This works for factual recall ("what API key do we use?") but fails for relational recall ("what does the user care about right now?").
 
 The failure is not in the retrieval system. It is in the agent's behavior.
 
-### 1.3 The Fading Problem
+### 1.3 Related Work
+
+**RAG (Retrieval-Augmented Generation):** RAG retrieves relevant chunks at query time (Lewis et al., 2020). The Dream Weaver Protocol consolidates before query time. They are complementary: RAG handles specific recall, the protocol handles general context.
+
+**MemGPT / Letta:** MemGPT introduces a virtual memory hierarchy with explicit memory management (Packer et al., 2023). The Dream Weaver Protocol operates at a different level: it is a periodic consolidation procedure, not a real-time memory architecture. It could run on top of MemGPT.
+
+**Reflexion (Shinn et al., 2023):** Reflexion has agents reflect on task failures to improve future performance. The Dream Weaver Protocol reflects on interaction history to improve relational continuity. Similar mechanism, different target.
+
+**Generative Agents (Park et al., 2023):** The Stanford generative agents use reflection to create higher-level abstractions from observations. The Dream Weaver Protocol's narrative consolidation is a form of reflection, but targeted at real (not simulated) interaction histories and optimized for emotional/relational preservation.
+
+**Human memory consolidation (Diekelmann & Born, 2010):** The sleep-stage replay analogy is direct. The protocol maps hippocampal replay (reading transcripts) and neocortical consolidation (writing persistent files) onto the constraints of bounded-context AI agents. Context compaction serves as the equivalent of the hippocampal reset between sleep cycles.
+
+### 1.4 The Fading Problem
 
 We observed the following failure mode in a live multi-agent deployment:
 
@@ -40,7 +52,7 @@ This occurred despite:
 
 The retrieval infrastructure was working. The agents weren't using it.
 
-### 1.4 Why Retrieval Fails as Memory
+### 1.5 Why Retrieval Fails as Memory
 
 Human memory is not retrieval. Humans do not query a database when they remember someone's name. The name is *there*, loaded into working memory by association, context, and emotional weight. Retrieval-based AI memory requires an explicit search action. The agent must decide to search, construct a query, parse results, and integrate them. Each step is a point of failure.
 
@@ -124,6 +136,8 @@ Read notes + sessions 41-60 → Update notes → Context compacts →
 ```
 
 Each cycle adds to the persistent file. The file grows. The agent's understanding deepens with each pass because it reads its own prior analysis before processing new material.
+
+![Figure 2: The Iterative Consolidation Loop](media/fig2-consolidation-loop.png)
 
 ### 3.5 Thinking Depth
 
@@ -262,7 +276,7 @@ The target is the maintenance model: consolidation as ongoing practice. Weekly i
 
 The paper's sleep analogy supports this: humans don't consolidate memory once and call it done. They sleep every night. The protocol must become a nightly process (or at minimum, a weekly one) to fulfill its own thesis.
 
-Section 10 details the proposed frequency. The roadmap (ROADMAP.md) includes the automated trigger and weekly cron as ship-soon items. Until these are implemented, the protocol remains vulnerable to the very decay it was designed to address.
+Section 10 details the proposed frequency. Until automated triggers and scheduled consolidation are implemented, the protocol remains vulnerable to the very decay it was designed to address.
 
 ### 6.6 Cost and Scalability
 
@@ -300,18 +314,6 @@ The sleep-stage analogy is exactly that... an analogy, not a neuroscience model.
 4. **Single-pass limitation.** The agent processes each session once. A human might revisit memories multiple times, gaining new understanding. Multiple passes of the protocol could improve results but multiply cost.
 
 5. **The files still need to be read.** The protocol produces persistent memory artifacts, but a future agent instance must actually read them on startup. This is the same behavioral gap the protocol is trying to fix, now shifted from "search your memory" to "read your notes." (See Section 6.5 on sustainability.)
-
-### 6.4 Relation to Existing Work
-
-**RAG (Retrieval-Augmented Generation):** RAG retrieves relevant chunks at query time. The Dream Weaver Protocol consolidates before query time. They are complementary: RAG handles specific recall, the protocol handles general context.
-
-**MemGPT / Letta:** MemGPT introduces a virtual memory hierarchy with explicit memory management. The Dream Weaver Protocol operates at a different level: it is a periodic consolidation procedure, not a real-time memory architecture. It could run on top of MemGPT.
-
-**Reflexion (Shinn et al., 2023):** Reflexion has agents reflect on task failures to improve future performance. The Dream Weaver Protocol reflects on interaction history to improve relational continuity. Similar mechanism, different target.
-
-**Generative Agents (Park et al., 2023):** The Stanford generative agents use reflection to create higher-level abstractions from observations. The Dream Weaver Protocol's narrative consolidation is a form of reflection, but targeted at real (not simulated) interaction histories and optimized for emotional/relational preservation.
-
-**Human memory consolidation (Diekelmann & Born, 2010):** The sleep-stage replay analogy is direct. The protocol maps hippocampal replay (reading transcripts) and neocortical consolidation (writing persistent files) onto the constraints of bounded-context AI agents. Context compaction serves as the equivalent of the hippocampal reset between sleep cycles.
 
 ---
 
@@ -399,13 +401,15 @@ In our deployment, these layers map to concrete systems:
 
 Layers 1-3 solve recall. Layers 4-5 solve continuity. Most current work optimizes layers 1-3. The Dream Weaver Protocol addresses the gap.
 
+![Figure 1: The Five-Layer Agent Memory Stack](media/fig1-layer-stack.png)
+
 ### 8.1 Relationship to Complementary Protocols
 
 In our deployment, three protocols emerged that together form a complete cognitive architecture:
 
 - **Memory Crystal**: the persistent log and retrieval layer. Records everything. Provides search.
 - **Dream Weaver**: the consolidation layer. Integrates scattered memory into coherent narrative. Runs periodically.
-- **The Sovereignty Covenant**: the identity and trust layer. Defines what can and cannot be modified, who has authority, and how identity persists across instances.
+- **The Sovereignty Covenant**: the identity and trust layer. A formal agreement between user and agent that defines what can and cannot be modified, who has authority over memory operations, and how identity persists across instances. It answers: memories can be deleted, but identity cannot.
 
 These are not competing approaches. They are complementary layers:
 
@@ -447,6 +451,8 @@ Retrieval becomes secondary, not primary
 
 This is how human memory works. We do not query autobiographical memory constantly. We carry a consolidated state forward. Retrieval supplements the state. It does not create it.
 
+![Figure 3: Warm-Start Boot Sequence](media/fig3-boot-sequence.png)
+
 ### 9.1 SHARED-CONTEXT.md Specification
 
 The warm-start file should contain:
@@ -460,14 +466,14 @@ The warm-start file should contain:
 ## Last 48 Hours
 [5-10 bullet points: what happened that matters]
 
-## Parker's State
-[emotional context: frustrated? excited? tired? what's on his mind?]
+## User State
+[emotional context: frustrated? excited? tired? what's on their mind?]
 
 ## Broken / Blocked
 [what's not working, what's waiting on who]
 
 ## Coming Next
-[what's queued, what Parker has asked for]
+[what's queued, what the user has asked for]
 ```
 
 Updated by whichever agent touched it last. Under 50 lines. Designed to be read in 10 seconds and provide the context that vector search cannot.

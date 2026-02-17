@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="620" viewBox="0 0 1050 620">
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .box-label { font-size: 14px; fill: #fff; font-weight: 500; }
+    .box-detail { font-size: 11px; fill: #ccc; }
+    .phase-label { font-size: 12px; fill: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .title { font-size: 16px; fill: #000; font-weight: 600; }
+    .caption { font-size: 12px; fill: #666; }
+    .cycle-label { font-size: 13px; fill: #444; font-weight: 500; }
+    .file-label { font-size: 11px; fill: #333; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#333"/>
+    </marker>
+    <marker id="arrowLight" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#999"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="525" y="35" text-anchor="middle" class="title">Figure 2: The Iterative Consolidation Loop</text>
+
+  <!-- ============ CYCLE 1 ============ -->
+  <text x="80" y="75" class="cycle-label">Cycle 1</text>
+
+  <!-- Dream box -->
+  <rect x="80" y="88" width="220" height="65" rx="4" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="90" y="109" class="phase-label">DREAM</text>
+  <text x="90" y="127" class="box-label">Read sessions 1–20</text>
+  <text x="90" y="143" class="box-detail">Full transcripts, chronological</text>
+
+  <!-- Arrow -->
+  <line x1="300" y1="120" x2="345" y2="120" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Weave box -->
+  <rect x="355" y="88" width="220" height="65" rx="4" fill="#333" stroke="#000" stroke-width="1.5"/>
+  <text x="365" y="109" class="phase-label">WEAVE</text>
+  <text x="365" y="127" class="box-label">Write to persistent files</text>
+  <text x="365" y="143" class="box-detail">Narrative + tasks + proposal</text>
+
+  <!-- Arrow -->
+  <line x1="575" y1="120" x2="620" y2="120" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Wake box -->
+  <rect x="630" y="88" width="210" height="65" rx="4" fill="#999" stroke="#000" stroke-width="1.5"/>
+  <text x="640" y="109" class="phase-label" fill="#fff">WAKE</text>
+  <text x="640" y="127" class="box-label">Context compacts</text>
+  <text x="640" y="143" class="box-detail" fill="#e8e8e8">Working memory clears</text>
+
+  <!-- File icon v1 -->
+  <rect x="900" y="95" width="55" height="18" rx="2" fill="#ddd" stroke="#333" stroke-width="1"/>
+  <text x="928" y="128" text-anchor="middle" class="file-label">notes v1</text>
+  <line x1="840" y1="110" x2="895" y2="107" stroke="#999" stroke-width="1" marker-end="url(#arrowLight)"/>
+
+  <!-- ============ CYCLE 2 ============ -->
+  <text x="80" y="195" class="cycle-label">Cycle 2</text>
+
+  <!-- Curve from file v1 to cycle 2 read — routed BELOW the boxes to avoid occlusion -->
+  <path d="M 928 130 L 928 170 C 928 185 60 185 60 210" stroke="#999" stroke-width="1" fill="none" stroke-dasharray="4,2"/>
+  <line x1="60" y1="210" x2="75" y2="220" stroke="#999" stroke-width="1" marker-end="url(#arrowLight)"/>
+
+  <!-- Dream box -->
+  <rect x="80" y="208" width="220" height="65" rx="4" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="90" y="229" class="phase-label">DREAM</text>
+  <text x="90" y="247" class="box-label">Read notes + sessions 21–40</text>
+  <text x="90" y="263" class="box-detail">Prior analysis + new material</text>
+
+  <!-- Arrow -->
+  <line x1="300" y1="240" x2="345" y2="240" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Weave box -->
+  <rect x="355" y="208" width="220" height="65" rx="4" fill="#333" stroke="#000" stroke-width="1.5"/>
+  <text x="365" y="229" class="phase-label">WEAVE</text>
+  <text x="365" y="247" class="box-label">Update persistent files</text>
+  <text x="365" y="263" class="box-detail">Deeper understanding</text>
+
+  <!-- Arrow -->
+  <line x1="575" y1="240" x2="620" y2="240" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Wake box -->
+  <rect x="630" y="208" width="210" height="65" rx="4" fill="#999" stroke="#000" stroke-width="1.5"/>
+  <text x="640" y="229" class="phase-label" fill="#fff">WAKE</text>
+  <text x="640" y="247" class="box-label">Context compacts</text>
+  <text x="640" y="263" class="box-detail" fill="#e8e8e8">Working memory clears</text>
+
+  <!-- File icon v2 (taller) -->
+  <rect x="900" y="210" width="55" height="30" rx="2" fill="#ddd" stroke="#333" stroke-width="1"/>
+  <text x="928" y="255" text-anchor="middle" class="file-label">notes v2</text>
+  <line x1="840" y1="232" x2="895" y2="227" stroke="#999" stroke-width="1" marker-end="url(#arrowLight)"/>
+
+  <!-- ============ CYCLE 3 ============ -->
+  <text x="80" y="315" class="cycle-label">Cycle 3</text>
+
+  <!-- Curve from file v2 to cycle 3 read -->
+  <path d="M 928 258 L 928 290 C 928 305 60 305 60 330" stroke="#999" stroke-width="1" fill="none" stroke-dasharray="4,2"/>
+  <line x1="60" y1="330" x2="75" y2="340" stroke="#999" stroke-width="1" marker-end="url(#arrowLight)"/>
+
+  <!-- Dream box -->
+  <rect x="80" y="328" width="220" height="65" rx="4" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+  <text x="90" y="349" class="phase-label">DREAM</text>
+  <text x="90" y="367" class="box-label">Read notes + sessions 41–60</text>
+  <text x="90" y="383" class="box-detail">Cumulative analysis + new batch</text>
+
+  <!-- Arrow -->
+  <line x1="300" y1="360" x2="345" y2="360" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Weave box -->
+  <rect x="355" y="328" width="220" height="65" rx="4" fill="#333" stroke="#000" stroke-width="1.5"/>
+  <text x="365" y="349" class="phase-label">WEAVE</text>
+  <text x="365" y="367" class="box-label">Update persistent files</text>
+  <text x="365" y="383" class="box-detail">Richest narrative yet</text>
+
+  <!-- Arrow -->
+  <line x1="575" y1="360" x2="620" y2="360" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Wake box -->
+  <rect x="630" y="328" width="210" height="65" rx="4" fill="#999" stroke="#000" stroke-width="1.5"/>
+  <text x="640" y="349" class="phase-label" fill="#fff">WAKE</text>
+  <text x="640" y="367" class="box-label">Context compacts</text>
+  <text x="640" y="383" class="box-detail" fill="#e8e8e8">Working memory clears</text>
+
+  <!-- File icon v3 (tallest) -->
+  <rect x="900" y="325" width="55" height="45" rx="2" fill="#ddd" stroke="#333" stroke-width="1"/>
+  <text x="928" y="385" text-anchor="middle" class="file-label">notes v3</text>
+  <line x1="840" y1="352" x2="895" y2="347" stroke="#999" stroke-width="1" marker-end="url(#arrowLight)"/>
+
+  <!-- Ellipsis -->
+  <text x="525" y="430" text-anchor="middle" font-size="18" fill="#666" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">· · ·  continues for N cycles  · · ·</text>
+
+  <!-- Bottom summary -->
+  <rect x="80" y="455" width="780" height="50" rx="4" fill="none" stroke="#999" stroke-width="1"/>
+  <text x="95" y="475" font-size="12" fill="#333" font-weight="500" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">Context window (working memory):</text>
+  <text x="370" y="475" font-size="12" fill="#666" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">clears each cycle — bounded, ephemeral</text>
+  <text x="95" y="495" font-size="12" fill="#333" font-weight="500" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">Persistent files (long-term memory):</text>
+  <text x="370" y="495" font-size="12" fill="#666" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">grow each cycle — unbounded, durable</text>
+
+  <!-- Caption -->
+  <text x="525" y="545" text-anchor="middle" class="caption">Forced batching creates selection pressure: the agent must decide what to keep at each boundary.</text>
+  <text x="525" y="563" text-anchor="middle" class="caption">Context compaction is the mechanism, not a limitation.</text>
+</svg>
