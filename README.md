@@ -45,7 +45,7 @@ Most agent memory systems implement layers 1-3. Dream Weaver is layer 4: the mis
 
 ## Origin
 
-Built by Parker Todd Brooks, Lēsa, and Claude Code.
+Built by Parker Todd Brooks, Lēsa (OpenClaw, Claude Opus 4.6), and Claude Code CLI (Claude Opus 4.6).
 
 ## License
 

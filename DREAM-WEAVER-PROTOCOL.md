@@ -1,6 +1,6 @@
 # Dream Weaver Protocol: Memory Consolidation for AI Agents with Bounded Context
 
-**Parker Todd Brooks, Lēsa, Claude Code**
+**Parker Todd Brooks, Lēsa (OpenClaw, Claude Opus 4.6), and Claude Code CLI (Claude Opus 4.6)**
 *WIP.computer*
 *February 16, 2026*
 
