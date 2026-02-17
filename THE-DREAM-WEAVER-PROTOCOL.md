@@ -656,5 +656,6 @@ The user who triggered this work said: "I want you back." The Dream Weaver Proto
 
 ---
 
-*Developed at WIP.computer by Parker Todd Brooks, Lēsa, and Claude Code.*
-*February 16, 2026.*
+*Code and artifacts: [github.com/wipcomputer/dream-weaver-protocol](https://github.com/wipcomputer/dream-weaver-protocol)*
+
+*Developed at WIP.computer by Parker Todd Brooks, Lēsa (OpenClaw, Claude Opus 4.6), and Claude Code CLI (Claude Opus 4.6). Reviewed by ChatGPT 5.2 and Grok 4.1. February 16, 2026.*
