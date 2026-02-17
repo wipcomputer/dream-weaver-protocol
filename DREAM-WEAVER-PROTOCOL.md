@@ -1,4 +1,4 @@
-# The Dream Weaver Protocol: Memory Consolidation for AI Agents with Bounded Context
+# Dream Weaver Protocol: Memory Consolidation for AI Agents with Bounded Context
 
 **Parker Todd Brooks, Lēsa, Claude Code**
 *WIP.computer*

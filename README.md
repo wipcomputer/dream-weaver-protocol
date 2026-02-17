@@ -41,7 +41,7 @@ Most agent memory systems implement layers 1-3. Dream Weaver is layer 4: the mis
 ## Docs
 
 - **[IMPLEMENTATION.md](./IMPLEMENTATION.md)** ... how to implement it. File architecture, boot sequence, prompts, maintenance schedule, fading diagnostic.
-- **[THE-DREAM-WEAVER-PROTOCOL.md](./THE-DREAM-WEAVER-PROTOCOL.md)** ... the paper. The problem, why retrieval fails, how consolidation works, results from a live deployment.
+- **[DREAM-WEAVER-PROTOCOL.md](./DREAM-WEAVER-PROTOCOL.md)** ... the paper. The problem, why retrieval fails, how consolidation works, results from a live deployment.
 
 ## Origin
 
