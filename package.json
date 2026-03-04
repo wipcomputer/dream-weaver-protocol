@@ -1,0 +1,25 @@
+{
+  "name": "dream-weaver-protocol",
+  "version": "0.1.1",
+  "description": "Dream Weaver Protocol — narrative consolidation engine for AI agents with bounded context windows.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/engine.ts src/prompts.ts src/parser.ts src/types.ts --format esm --dts --outDir dist",
+    "build:local": "tsup src/index.ts src/engine.ts src/prompts.ts src/parser.ts src/types.ts --format esm --dts --outDir dist"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT",
+  "author": "Parker Todd Brooks, Lēsa, Claude Code"
+}
