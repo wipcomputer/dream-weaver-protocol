@@ -1,10 +1,4 @@
-_trash/
 .DS_Store
-*.aux
-*.bbl
-*.blg
-*.log
-*.out
-# Keep paper.pdf tracked, ignore other PDFs
-# *.pdf
 *.synctex.gz
+node_modules/
+dist/
